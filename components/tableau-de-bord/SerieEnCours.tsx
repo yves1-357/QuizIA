@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface SerieEnCoursProps {
   onContinue?: (subject: string, level: number) => void;
@@ -19,27 +19,7 @@ interface CurrentSession {
 export default function SerieEnCours({ onContinue, userId }: SerieEnCoursProps) {
   const [currentSession, setCurrentSession] = useState<CurrentSession | null>(null);
 
-  useEffect(() => {
-    detectCurrentSession();
-    
-    // Écouter les changements avec un CustomEvent pour le même onglet
-    const handleStorageChange = () => {
-      detectCurrentSession();
-    };
-
-    // Événement pour les autres onglets
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Événement personnalisé pour le même onglet
-    window.addEventListener('localStorageUpdated', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('localStorageUpdated', handleStorageChange);
-    };
-  }, [userId]);
-
-  const detectCurrentSession = () => {
+  const detectCurrentSession = useCallback(() => {
     if (typeof window === 'undefined' || !userId) return;
 
     const subjects = [
@@ -56,12 +36,10 @@ export default function SerieEnCours({ onContinue, userId }: SerieEnCoursProps) 
       for (let level = 1; level <= 10; level++) {
         const questionsKey = `${userId}_${name}_${level}_questions`;
         const indexKey = `${userId}_${name}_${level}_currentIndex`;
-        const progressKey = `${userId}_${name}_${level}_progress_percentage`;
         const timestampKey = `${userId}_${name}_${level}_timestamp`;
 
         const questions = localStorage.getItem(questionsKey);
         const currentIndex = localStorage.getItem(indexKey);
-        const percentage = localStorage.getItem(progressKey);
         const timestamp = localStorage.getItem(timestampKey);
 
         if (questions && currentIndex !== null && timestamp) {
@@ -88,7 +66,28 @@ export default function SerieEnCours({ onContinue, userId }: SerieEnCoursProps) 
     });
 
     setCurrentSession(mostRecentSession);
-  };
+  }, [userId]);
+
+  useEffect(() => {
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+    detectCurrentSession();
+    
+    // Écouter les changements avec un CustomEvent pour le même onglet
+    const handleStorageChange = () => {
+      detectCurrentSession();
+    };
+
+    // Événement pour les autres onglets
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Événement personnalisé pour le même onglet
+    window.addEventListener('localStorageUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageUpdated', handleStorageChange);
+    };
+  }, [userId, detectCurrentSession]);
 
   const handleContinue = () => {
     if (currentSession && onContinue) {
@@ -128,7 +127,7 @@ export default function SerieEnCours({ onContinue, userId }: SerieEnCoursProps) 
       <div className="serie-content">
         <div className="serie-info">
           <h2>Reprendre {currentSession.subject} {currentSession.icon}</h2>
-          <p>Le module "Niveau {currentSession.level}" vous attend. Plus que {remainingExercises} exercice{remainingExercises > 1 ? 's' : ''} pour valider le niveau.</p>
+         <p>Le  module &quot;Niveau {currentSession.level}&quot; vous attend. Plus que {remainingExercises} exercice{remainingExercises > 1 ? 's' : ''} pour valider le niveau.</p>
           
           <button type="button" className="btn-continue" onClick={handleContinue}>
             Continuer
