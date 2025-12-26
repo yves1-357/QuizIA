@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/tableau-de-bord/sidebar';
 import DashboardHeader from '@/components/tableau-de-bord/DashboardHeader';
@@ -11,7 +11,7 @@ import QuizModal from '@/components/QuizModal';
 
 export default function Dashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; email: string; id: string } | null>(() => {
+  const [user, _setUser] = useState<{ name: string; email: string; id: string } | null>(() => {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem('user');
       return userStr ? JSON.parse(userStr) : null;
@@ -24,7 +24,52 @@ export default function Dashboard() {
   const [subjectProgress, setSubjectProgress] = useState<Record<string, { level: number; progression: number }>>({});
   const [tempProgress, setTempProgress] = useState<Record<string, number>>({});
 
+  const loadTempProgress = useCallback(() => {
+    if (typeof window === 'undefined' || !user) return;
+    
+    const subjects = ['Mathématiques', 'Physique', 'Anglais'];
+    const temp: Record<string, number> = {};
+    
+    subjects.forEach(subject => {
+      // Chercher pour tous les niveaux possibles
+      for (let level = 1; level <= 10; level++) {
+        const questionsKey = `${user?.id}_${subject}_${level}_questions`;
+        const indexKey = `${user?.id}_${subject}_${level}_currentIndex`;
+        
+        const questions = localStorage.getItem(questionsKey);
+        const currentIndex = localStorage.getItem(indexKey);
+        
+        if (questions && currentIndex !== null) {
+          const questionsArray = JSON.parse(questions);
+          const index = parseInt(currentIndex);
+          // Recalculer le pourcentage dynamiquement
+          const calculatedPercentage = Math.round(((index + 1) / questionsArray.length) * 100);
+          temp[subject] = calculatedPercentage;
+          console.log(`Updated ${subject}: ${index + 1}/${questionsArray.length} = ${calculatedPercentage}%`);
+          break; // Prendre le premier trouvé
+        }
+      }
+    });
+    
+    setTempProgress(temp);
+  }, [user]);
+
+  const fetchUserProgress = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      const response = await fetch(`/api/user/progress?userId=${user.id}`);
+      const data = await response.json();
+      if (data.progressions) {
+        setSubjectProgress(data.progressions);
+      }
+    } catch (error) {
+      console.error('Erreur chargement progression:', error);
+    }
+  }, [user]);
+
   useEffect(() => {
+     // eslint-disable-next-line react-hooks/exhaustive-deps
     if (!user) {
       router.push('/');
     } else {
@@ -44,51 +89,7 @@ export default function Dashboard() {
     return () => {
       window.removeEventListener('localStorageUpdated', handleStorageUpdate);
     };
-  }, [router, user]);
-
-  const loadTempProgress = () => {
-    if (typeof window === 'undefined' || !user) return;
-    
-    const subjects = ['Mathématiques', 'Physique', 'Anglais'];
-    const temp: Record<string, number> = {};
-    
-    subjects.forEach(subject => {
-      // Chercher pour tous les niveaux possibles
-      for (let level = 1; level <= 10; level++) {
-        const questionsKey = `${user.id}_${subject}_${level}_questions`;
-        const indexKey = `${user.id}_${subject}_${level}_currentIndex`;
-        
-        const questions = localStorage.getItem(questionsKey);
-        const currentIndex = localStorage.getItem(indexKey);
-        
-        if (questions && currentIndex !== null) {
-          const questionsArray = JSON.parse(questions);
-          const index = parseInt(currentIndex);
-          // Recalculer le pourcentage dynamiquement
-          const calculatedPercentage = Math.round(((index + 1) / questionsArray.length) * 100);
-          temp[subject] = calculatedPercentage;
-          console.log(`Updated ${subject}: ${index + 1}/${questionsArray.length} = ${calculatedPercentage}%`);
-          break; // Prendre le premier trouvé
-        }
-      }
-    });
-    
-    setTempProgress(temp);
-  };
-
-  const fetchUserProgress = async () => {
-    if (!user) return;
-    
-    try {
-      const response = await fetch(`/api/user/progress?userId=${user.id}`);
-      const data = await response.json();
-      if (data.progressions) {
-        setSubjectProgress(data.progressions);
-      }
-    } catch (error) {
-      console.error('Erreur chargement progression:', error);
-    }
-  };
+  }, [router, user, fetchUserProgress, loadTempProgress]);
 
   useEffect(() => {
     // Appliquer le thème sauvegardé au chargement
