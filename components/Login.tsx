@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -9,16 +10,47 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose, onSwitchToInscription }: LoginModalProps) {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logique de connexion à implémenter
-    console.log('Login:', { email, password });
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de la connexion');
+      }
+
+      // Sauvegarder l'utilisateur dans localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Rediriger vers le dashboard
+      router.push('/dashboard');
+      onClose();
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,8 +102,21 @@ export default function LoginModal({ isOpen, onClose, onSwitchToInscription }: L
             </div>
           </div>
 
-          <button type="submit" className="auth-submit-btn">
-            Se connecter
+          {error && (
+            <div className="error-message" style={{ 
+              padding: '12px', 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              border: '1px solid rgb(239, 68, 68)', 
+              borderRadius: '8px', 
+              color: 'rgb(239, 68, 68)',
+              marginBottom: '16px'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
+            {loading ? 'Connexion en cours...' : 'Se connecter'}
           </button>
 
           <div className="auth-footer">
