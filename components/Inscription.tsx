@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface InscriptionModalProps {
   isOpen: boolean;
@@ -9,7 +10,10 @@ interface InscriptionModalProps {
 }
 
 export default function InscriptionModal({ isOpen, onClose, onSwitchToLogin }: InscriptionModalProps) {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -19,10 +23,38 @@ export default function InscriptionModal({ isOpen, onClose, onSwitchToLogin }: I
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logique d'inscription à implémenter
-    console.log('Inscription:', formData);
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de l\'inscription');
+      }
+
+      // Sauvegarder l'utilisateur dans localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Rediriger vers le dashboard
+      router.push('/dashboard');
+      onClose();
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,8 +141,21 @@ export default function InscriptionModal({ isOpen, onClose, onSwitchToLogin }: I
             </div>
           </div>
 
-          <button type="submit" className="auth-submit-btn">
-            S&apos;inscrire
+          {error && (
+            <div className="error-message" style={{ 
+              padding: '12px', 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              border: '1px solid rgb(239, 68, 68)', 
+              borderRadius: '8px', 
+              color: 'rgb(239, 68, 68)',
+              marginBottom: '16px'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
+            {loading ? 'Inscription en cours...' : 'S\'inscrire'}
           </button>
 
           <div className="auth-footer">
