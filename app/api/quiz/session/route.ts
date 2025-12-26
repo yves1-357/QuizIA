@@ -57,10 +57,10 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ session: null });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur récupération session:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur', details: error.message },
+      { error: 'Erreur serveur', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -126,10 +126,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, session });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur sauvegarde session:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur', details: error.message },
+      { error: 'Erreur serveur', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -161,10 +161,10 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur suppression session:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur', details: error.message },
+      { error: 'Erreur serveur', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
