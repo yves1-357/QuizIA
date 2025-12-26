@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface ProfilModalProps {
@@ -11,15 +11,13 @@ interface ProfilModalProps {
 
 export default function ProfilModal({ isOpen, onClose, userName }: ProfilModalProps) {
   const router = useRouter();
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [showConfirmLogout, setShowConfirmLogout] = useState(false);
-
-  useEffect(() => {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
-      setTheme(savedTheme);
+      return localStorage.getItem('theme') as 'dark' | 'light' || 'dark';
     }
-  }, []);
+    return 'dark';
+  });
+  const [showConfirmLogout, setShowConfirmLogout] = useState(false);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -49,7 +47,7 @@ export default function ProfilModal({ isOpen, onClose, userName }: ProfilModalPr
       <div className="profil-modal">
         <div className="profil-modal-header">
           <h2>Mon Profil</h2>
-          <button onClick={onClose} className="modal-close">
+          <button onClick={onClose} className="modal-close" aria-label="Fermer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -70,7 +68,7 @@ export default function ProfilModal({ isOpen, onClose, userName }: ProfilModalPr
 
           {/* Theme Toggle */}
           <div className="profil-modal-section">
-            <h4>Thème d'affichage</h4>
+            <h4>Thème d&apos;affichage</h4>
             <div className="theme-toggle-container">
               <button
                 className={`theme-option ${theme === 'dark' ? 'active' : ''}`}
