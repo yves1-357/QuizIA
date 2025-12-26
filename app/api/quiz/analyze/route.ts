@@ -3,6 +3,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+interface Question {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { userId, subjectId, subject, level, questions, answers, model } = await request.json();
@@ -16,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     // Calculer le score
     let correctCount = 0;
-    questions.forEach((q: any, index: number) => {
+    questions.forEach((q: Question, index: number) => {
       if (q.correctAnswer === answers[index]) {
         correctCount++;
       }
@@ -45,7 +51,7 @@ export async function POST(request: NextRequest) {
 Score: ${correctCount}/${totalQuestions} (${score}%)
 
 Questions et réponses:
-${questions.map((q: any, i: number) => `
+${questions.map((q: Question, i: number) => `
 Q${i + 1}: ${q.question}
 Réponse de l'étudiant: ${answers[i]}
 Réponse correcte: ${q.correctAnswer}
@@ -222,10 +228,10 @@ Sois encourageant et constructif.`;
       nextLevel: passed ? level + 1 : level,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur analyse quiz:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur', details: error.message },
+      { error: 'Erreur serveur', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
