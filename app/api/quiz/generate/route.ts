@@ -107,10 +107,10 @@ Format JSON STRICT (aucun texte avant ou après):
       model: model,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur génération quiz:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur', details: error.message },
+      { error: 'Erreur serveur', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
