@@ -8,6 +8,20 @@ interface Question {
   correctAnswer: string;
 }
 
+interface Feedback {
+  score: number;
+  passed: boolean;
+  feedback: string;
+  correctCount: number;
+  totalQuestions: number;
+  detailedResults: Array<{
+    question: string;
+    userAnswer: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+  }>;
+}
+
 interface QuizModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,8 +39,8 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [feedback, setFeedback] = useState<any>(null);
+  const [_showResults, _setShowResults] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [step, setStep] = useState<'model-selection' | 'academic-level' | 'quiz' | 'results'>('model-selection');
 
   // Charger les préférences sauvegardées et démarrer directement si niveau > 1
@@ -318,7 +332,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
     setCurrentQuestionIndex(0);
     setUserAnswers([]);
     setSelectedAnswer('');
-    setShowResults(false);
+    _setShowResults(false);
     setFeedback(null);
     setStep('model-selection');
   };
@@ -343,7 +357,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           <>
             <div className="quiz-modal-header">
               <h2>Choisit un modèle IA</h2>
-              <button onClick={handleClose} className="modal-close">
+              <button onClick={handleClose} className="modal-close" aria-label="Fermer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -381,7 +395,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
         {step === 'academic-level' && (
           <>
             <div className="quiz-modal-header">
-              <button onClick={() => setStep('model-selection')} className="btn-back">
+              <button onClick={() => setStep('model-selection')} className="btn-back" aria-label="Retour">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" width="20" height="20">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
@@ -389,7 +403,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
               <div style={{ flex: 1, textAlign: 'center' }}>
                 <h2>Choisit le niveau académique</h2>
               </div>
-              <button onClick={handleClose} className="modal-close">
+              <button onClick={handleClose} className="modal-close" aria-label="Fermer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -397,7 +411,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
             </div>
             <div className="quiz-modal-content">
               <p className="quiz-subject-title">Matière : {subject}</p>
-              <p className="quiz-level-info">Les questions seront adaptées à votre niveau d'études</p>
+              <p className="quiz-level-info">Les questions seront adaptées à votre niveau d&apos;études</p>
 
               <div className="academic-level-grid">
                 {academicLevels.map((level) => (
@@ -431,7 +445,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
                 <h2>{subject}</h2>
                 <p className="quiz-progress">Question {currentQuestionIndex + 1}/{questions.length}</p>
               </div>
-              <button onClick={handleClose} className="modal-close">
+              <button onClick={handleClose} className="modal-close" aria-label="Fermer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -469,7 +483,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           <>
             <div className="quiz-modal-header">
               <h2>Résultats</h2>
-              <button onClick={handleClose} className="modal-close">
+              <button onClick={handleClose} className="modal-close" aria-label="Fermer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -485,7 +499,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
               </div>
 
               <div className="feedback-section">
-                <h4>Feedback de l'IA</h4>
+                <h4>Feedback de ld&apos;IA</h4>
                 <p>{feedback.feedback}</p>
               </div>
 
