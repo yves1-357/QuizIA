@@ -1,23 +1,22 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ProfilModal from './ProfilModal';
 
 export default function Sidebar() {
-  const router = useRouter();
+  const _router = useRouter();
   const [showProfilModal, setShowProfilModal] = useState(false);
-  const [userName, setUserName] = useState('');
-
-  useEffect(() => {
+  const [userName, _setUserName] = useState(() => {
     if (typeof window !== 'undefined') {
       const user = localStorage.getItem('user');
       if (user) {
         const userData = JSON.parse(user);
-        setUserName(userData.name || 'Utilisateur');
+        return userData.name || 'Utilisateur';
       }
     }
-  }, []);
+    return '';
+  });
 
   return (
     <aside className="dashboard-sidebar">
