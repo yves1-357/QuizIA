@@ -8,6 +8,8 @@ import SerieEnCours from '@/components/tableau-de-bord/SerieEnCours';
 import CarteMatiere from '@/components/tableau-de-bord/carteMatiere';
 import Classement from '@/components/tableau-de-bord/Classement';
 import QuizModal from '@/components/QuizModal';
+import ChatbotModal from '@/components/ChatbotModal';
+import LegalModal from '@/components/LegalModal';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -20,6 +22,8 @@ export default function Dashboard() {
   });
 
   const [showQuizModal, setShowQuizModal] = useState(false);
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [showLegalModal, setShowLegalModal] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState({ name: '', id: '', level: 1 });
   const [subjectProgress, setSubjectProgress] = useState<Record<string, { level: number; progression: number }>>({});
   const [tempProgress, setTempProgress] = useState<Record<string, number>>({});
@@ -171,20 +175,36 @@ export default function Dashboard() {
 
         {/* Profil + Classement */}
         <div className="dashboard-bottom">
-          <div className="profil-card">
+          <div className="profil-card chatbot-card" onClick={() => setShowChatbot(true)}>
             <div className="profil-avatar">
-              <div className="avatar-circle">
-                {user.name.charAt(0).toUpperCase()}
+              <div className="avatar-circle chatbot-avatar">
+                🤖
               </div>
             </div>
             <div className="profil-info">
-              <h3>{user.name}</h3>
-              <span className="profil-badge">Étudiant Premium</span>
+              <h3>Assistant IA</h3>
+              <span className="profil-badge">Poser une question</span>
             </div>
           </div>
 
           <Classement />
         </div>
+
+        {/* Footer */}
+        <footer className="dashboard-footer">
+          <div className="footer-content">
+            <p className="footer-text">
+              QuizIA utilise l&#39;IA générative (OpenRouter), il peut commettre des erreurs. 
+              Il est recommandé de vérifier les informations importantes. 
+              <button 
+                className="footer-link" 
+                onClick={() => setShowLegalModal(true)}
+              >
+                Voir les préférences en matière de cookies
+              </button>
+            </p>
+          </div>
+        </footer>
       </main>
 
       <QuizModal
@@ -194,6 +214,18 @@ export default function Dashboard() {
         subjectId={selectedSubject.id}
         userId={user.id}
         currentLevel={selectedSubject.level}
+      />
+
+      <ChatbotModal
+        isOpen={showChatbot}
+        onClose={() => setShowChatbot(false)}
+        userName={user.name}
+        userId={user.id}
+      />
+
+      <LegalModal
+        isOpen={showLegalModal}
+        onClose={() => setShowLegalModal(false)}
       />
     </div>
   );
