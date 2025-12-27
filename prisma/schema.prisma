@@ -22,6 +22,7 @@ model User {
   exercises     ExerciseHistory[]
   sessions      LearningSession[]
   quizSessions  QuizSession[]
+  chatConversations ChatConversation[]
 }
 
 enum Role {
@@ -140,6 +141,22 @@ model QuizSession {
   user            User      @relation(fields: [userId], references: [id])
   
   @@unique([userId, subject, level])
+  @@index([userId])
+  @@index([updatedAt])
+}
+
+// Historique des conversations chatbot
+model ChatConversation {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  model       String
+  messages    String    @db.Text  // JSON stringifié
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  user        User      @relation(fields: [userId], references: [id])
+  
   @@index([userId])
   @@index([updatedAt])
 }
