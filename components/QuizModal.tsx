@@ -154,6 +154,9 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
   };
 
   const startQuizDirect = async (model: string, academic: string) => {
+    // Sauvegarder le choix académique
+    localStorage.setItem(`${userId}_${subject}_choixAcademique`, academic);
+    
     setIsLoading(true);
     setStep('quiz');
 
@@ -219,6 +222,8 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
     // Sauvegarder les préférences pour les prochains niveaux
     localStorage.setItem(`${userId}_${subject}_model`, selectedModel);
     localStorage.setItem(`${userId}_${subject}_academicLevel`, academicLevel);
+    // Sauvegarder le choix académique pour le filtrage dans Parcours
+    localStorage.setItem(`${userId}_${subject}_choixAcademique`, academicLevel);
     
     setIsLoading(true);
     setStep('quiz');
