@@ -25,7 +25,12 @@ export default function SerieEnCours({ onContinue, userId }: SerieEnCoursProps) 
     const subjects = [
       { name: 'Mathématiques', icon: '⚡' },
       { name: 'Physique', icon: '🎯' },
-      { name: 'Anglais', icon: '📖' }
+      { name: 'Anglais', icon: '📖' },
+      { name: 'Chimie', icon: '⚗️' },
+      { name: 'Français', icon: '📝' },
+      { name: 'Économie', icon: '💰' },
+      { name: 'Histoire', icon: '📜' },
+      { name: 'Géopolitique', icon: '🌍' }
     ];
 
     // Chercher la session la plus récente
@@ -33,7 +38,7 @@ export default function SerieEnCours({ onContinue, userId }: SerieEnCoursProps) 
     let mostRecentTime = 0;
 
     subjects.forEach(({ name, icon }) => {
-      for (let level = 1; level <= 10; level++) {
+      for (let level = 1; level <= 4; level++) {
         const questionsKey = `${userId}_${name}_${level}_questions`;
         const indexKey = `${userId}_${name}_${level}_currentIndex`;
         const timestampKey = `${userId}_${name}_${level}_timestamp`;
