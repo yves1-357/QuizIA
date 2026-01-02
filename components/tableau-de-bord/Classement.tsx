@@ -18,6 +18,8 @@ const moods: Mood[] = [
   { emoji: '🤔', label: 'Pensif', response: 'Réfléchir c\'est bien. Maintenant, passons à l\'action ensemble pour avancer concrètement.' },
   { emoji: '😌', label: 'Serein', response: 'Excellente disposition. Tu es prêt à apprendre efficacement et à progresser aujourd\'hui.' },
   { emoji: '😎', label: 'Confiant', response: 'Super attitude. Ta confiance va t\'aider à surmonter les défis qui t\'attendent.' },
+  { emoji: '🤓', label: 'Concentré', response: 'Ta concentration est un atout majeur. Profites-en pour approfondir tes connaissances.' },
+  { emoji: '💪', label: 'Déterminé', response: 'Cette détermination va te porter loin. Continue avec cette belle énergie.' },
 ];
 
 export default function Classement() {
