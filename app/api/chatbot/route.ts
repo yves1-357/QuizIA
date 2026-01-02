@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 // Interfaces pour pdf2json
 interface PDFTextRun {
@@ -34,7 +35,7 @@ type ContentPart = TextContent | ImageContent;
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, model = 'openai/gpt-4o-mini', files = [] } = await request.json();
+    const { messages, model = 'openai/gpt-4o-mini', files = [], userId } = await request.json();
 
     console.log('📁 Fichiers reçus:', files.length);
     
@@ -182,6 +183,7 @@ Règles importantes:
 
     console.log('Envoi à', model, '| PDFs extraits:', hasPDF, '| Images:', hasImages);
 
+    // Appel NON-STREAMING pour obtenir les vrais tokens
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -199,7 +201,7 @@ Règles importantes:
         ],
         temperature: 0.7,
         max_tokens: 1000,
-        stream: true
+        stream: false // NON-STREAMING pour avoir usage
       })
     });
 
@@ -207,54 +209,48 @@ Règles importantes:
       throw new Error(`OpenRouter API error: ${response.status}`);
     }
 
-    // Retourner le stream directement au client
+    const data = await response.json();
+    const fullResponse = data.choices[0].message.content;
+    const tokensIn = data.usage?.prompt_tokens || 0;
+    const tokensOut = data.usage?.completion_tokens || 0;
+
+    // Sauvegarder SEULEMENT les tokens pour le budget (pas la conversation complète)
+    // Les conversations sont gérées par /api/chat-conversations
+    if (userId && fullResponse) {
+      try {
+        await prisma.chatConversation.create({
+          data: {
+            userId: userId,
+            model: model,
+            tokensIn: tokensIn,
+            tokensOut: tokensOut,
+            type: 'chat_usage', // Type différent pour ne pas créer de doublons
+            title: null, // Pas de titre pour les entrées de budget
+            messages: null,
+          },
+        });
+        console.log(`✅ Tokens enregistrés pour budget: ${tokensIn} in, ${tokensOut} out`);
+      } catch (dbError) {
+        console.error('❌ Erreur sauvegarde tokens:', dbError);
+      }
+    }
+
+    // Simuler le streaming pour le client (envoyer mot par mot)
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
-        const reader = response.body?.getReader();
-        if (!reader) {
-          controller.close();
-          return;
-        }
-
-        const decoder = new TextDecoder();
-        
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            
-            if (done) {
-              controller.close();
-              break;
-            }
-
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6);
-                
-                if (data === '[DONE]') {
-                  controller.close();
-                  return;
-                }
-
-                try {
-                  const parsed = JSON.parse(data);
-                  const content = parsed.choices?.[0]?.delta?.content;
-                  
-                  if (content) {
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
-                  }
-                } catch (e) {
-                  // Ignorer les lignes invalides
-                }
-              }
-            }
+          // Envoyer la réponse mot par mot pour simuler le streaming
+          const words = fullResponse.split(' ');
+          for (let i = 0; i < words.length; i++) {
+            const word = words[i] + (i < words.length - 1 ? ' ' : '');
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: word })}\n\n`));
+            // Petit délai pour simuler le streaming
+            await new Promise(resolve => setTimeout(resolve, 30));
           }
+          controller.close();
         } catch (error) {
-          console.error('Erreur streaming:', error);
+          console.error('Erreur streaming simulé:', error);
           controller.error(error);
         }
       }
