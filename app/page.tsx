@@ -6,12 +6,14 @@ import PricingModal from '@/components/Tarifs';
 import LoginModal from '@/components/Login';
 import InscriptionModal from '@/components/Inscription';
 import FonctionnalitesModal from '@/components/Fonctionnalites';
+import AdminLoginModal from '@/components/AdminLogin';
 
 export default function Home() {
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showInscriptionModal, setShowInscriptionModal] = useState(false);
   const [showFonctionnalitesModal, setShowFonctionnalitesModal] = useState(false);
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -57,7 +59,7 @@ export default function Home() {
             Laissez l&apos;IA tester vos connaissances et combler vos lacunes.
           </p>
           <div className="cta-group">
-            <Link href="/register" className="btn-primary" style={{ fontSize: '1.1rem', padding: '15px 40px' }}>
+            <Link href="/register" className="btn-primary" style={{ fontSize: '1.1rem', padding: '15px 40px' }} onClick={(e) => { e.preventDefault(); setShowInscriptionModal(true); }}>
               Commencer gratuitement
             </Link>
           </div>
@@ -103,6 +105,15 @@ export default function Home() {
         
         <footer>
           <p>&copy; 2025 QuizIA</p>
+          <button 
+            className="admin-btn" 
+            title="Administration"
+            onClick={() => setShowAdminLoginModal(true)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" width="20" height="20">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </button>
         </footer>
       </div>
 
@@ -125,6 +136,10 @@ export default function Home() {
           setShowInscriptionModal(false);
           setShowLoginModal(true);
         }}
+      />
+      <AdminLoginModal 
+        isOpen={showAdminLoginModal} 
+        onClose={() => setShowAdminLoginModal(false)} 
       />
       <FonctionnalitesModal 
         isOpen={showFonctionnalitesModal} 
