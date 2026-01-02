@@ -8,7 +8,6 @@ import SerieEnCours from '@/components/tableau-de-bord/SerieEnCours';
 import CarteMatiere from '@/components/tableau-de-bord/carteMatiere';
 import Classement from '@/components/tableau-de-bord/Classement';
 import QuizModal from '@/components/QuizModal';
-import ChatbotModal from '@/components/ChatbotModal';
 import LegalModal from '@/components/LegalModal';
 
 export default function Dashboard() {
@@ -17,7 +16,6 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [showQuizModal, setShowQuizModal] = useState(false);
-  const [showChatbot, setShowChatbot] = useState(false);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState({ name: '', id: '', level: 1 });
   const [subjectProgress, setSubjectProgress] = useState<Record<string, { level: number; progression: number }>>({});
@@ -270,7 +268,7 @@ export default function Dashboard() {
 
         {/* Profil + Classement */}
         <div className="dashboard-bottom">
-          <div className="profil-card chatbot-card" onClick={() => setShowChatbot(true)}>
+          <div className="profil-card chatbot-card" onClick={() => router.push('/chatbot')}>
             <div className="profil-avatar">
               <div className="avatar-circle chatbot-avatar">
                 🤖
@@ -309,13 +307,6 @@ export default function Dashboard() {
         subjectId={selectedSubject.id}
         userId={user.id}
         currentLevel={selectedSubject.level}
-      />
-
-      <ChatbotModal
-        isOpen={showChatbot}
-        onClose={() => setShowChatbot(false)}
-        userName={user.name}
-        userId={user.id}
       />
 
       <LegalModal
