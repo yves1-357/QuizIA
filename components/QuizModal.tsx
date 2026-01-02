@@ -170,6 +170,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           model: model,
           academicLevel: academic,
           questionCount: currentLevel === 1 ? 5 : currentLevel * 5,
+          userId: userId,
         }),
       });
 
@@ -238,6 +239,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           model: selectedModel,
           academicLevel,
           questionCount: currentLevel === 1 ? 5 : currentLevel * 5,
+          userId: userId,
         }),
       });
 
