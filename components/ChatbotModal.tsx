@@ -73,16 +73,22 @@ export default function ChatbotModal({ isOpen, onClose, userName, userId }: Chat
         const chatsWithDates = data.map((chat: Chat) => ({
           ...chat,
           createdAt: new Date(chat.createdAt),
-          messages: chat.messages.map((msg: Message) => ({
+          messages: Array.isArray(chat.messages) ? chat.messages.map((msg: Message) => ({
             ...msg,
-            timestamp: new Date(msg.timestamp)
-          }))
+            timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
+          })) : []
         }));
-        setChats(chatsWithDates);
+        
+        // Filtrer les chats valides (avec des messages)
+        const validChats = chatsWithDates.filter((chat: Chat) => 
+          chat.messages && chat.messages.length > 0
+        );
+        
+        setChats(validChats);
         
         // Sélectionner le dernier chat ou créer un nouveau
-        if (chatsWithDates.length > 0) {
-          setCurrentChatId(chatsWithDates[chatsWithDates.length - 1].id);
+        if (validChats.length > 0) {
+          setCurrentChatId(validChats[validChats.length - 1].id);
         } else {
           createNewChat();
         }
@@ -291,7 +297,8 @@ export default function ChatbotModal({ isOpen, onClose, userName, userId }: Chat
             content: m.content
           })),
           model: currentChat?.model || selectedModel,
-          files: fileData
+          files: fileData,
+          userId: userId
         })
       });
 
