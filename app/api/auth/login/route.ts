@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Ne pas retourner le mot de passe
     const { password: _, ...userWithoutPassword } = user;
 
-    // Créer une session simple (vous pourrez améliorer avec NextAuth plus tard)
+    // Créer une session simple (ON peux améliorer avec NextAuth plus tard)
     const response = NextResponse.json(
       { 
         message: 'Connexion réussie',
@@ -79,7 +77,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erreur serveur lors de la connexion' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
