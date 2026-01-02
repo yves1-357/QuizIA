@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 interface Question {
   question: string;
@@ -89,6 +87,25 @@ Sois encourageant et constructif.`;
 
     const aiData = await aiResponse.json();
     const feedback = aiData.choices[0].message.content;
+
+    // Sauvegarder dans ChatConversation pour le suivi du budget
+    const tokensIn = aiData.usage?.prompt_tokens || 0;
+    const tokensOut = aiData.usage?.completion_tokens || 0;
+
+    try {
+      await prisma.chatConversation.create({
+        data: {
+          userId: userId,
+          model: model,
+          tokensIn: tokensIn,
+          tokensOut: tokensOut,
+          type: 'quiz_analysis',
+        },
+      });
+    } catch (dbError) {
+      console.error('Erreur sauvegarde ChatConversation:', dbError);
+      // On continue même si l'enregistrement échoue
+    }
 
     // Trouver ou créer le sujet
     let subjectRecord = await prisma.subject.findFirst({
