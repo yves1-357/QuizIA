@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +11,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Récupérer toutes les progressions de l'utilisateur
-    const progressions = await prisma.userTopicProgress.findMany({
+
+
+    type UserTopicProgress = Awaited<ReturnType<typeof prisma.userTopicProgress.findMany>>[number];
+    type ProgressionWithTopicAndSubject = UserTopicProgress & {
+      topic: {
+        subject: {
+          name: string;
+        };
+      };
+    };
+    const progressions: ProgressionWithTopicAndSubject[] = await prisma.userTopicProgress.findMany({
       where: { userId },
       include: {
         topic: {
