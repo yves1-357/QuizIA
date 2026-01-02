@@ -80,7 +80,7 @@ export default function FonctionnalitesModal({ isOpen, onClose }: Fonctionnalite
               <div className="feature-icon">📚</div>
               <div>
                 <h4>Import de Documents</h4>
-                <p>Uploadez vos PDF, Word ou notes pour créer des quiz instantanément</p>
+                <p>Uploadez vos PDF, Images ou notes pour créer des quiz instantanément</p>
               </div>
             </div>
 
