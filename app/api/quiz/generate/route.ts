@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const { subject, level, model, academicLevel, questionCount } = await request.json();
+    const { subject, level, model, academicLevel, questionCount, userId } = await request.json();
 
     // Mapper le niveau académique vers une description
     const academicLevelMap: Record<string, string> = {
@@ -82,6 +83,27 @@ Format JSON STRICT (aucun texte avant ou après):
 
     const data = await response.json();
     const content = data.choices[0].message.content;
+
+    // Sauvegarder dans ChatConversation pour le suivi du budget
+    const tokensIn = data.usage?.prompt_tokens || 0;
+    const tokensOut = data.usage?.completion_tokens || 0;
+
+    if (userId) {
+      try {
+        await prisma.chatConversation.create({
+          data: {
+            userId: userId,
+            model: model,
+            tokensIn: tokensIn,
+            tokensOut: tokensOut,
+            type: 'quiz_generation',
+          },
+        });
+      } catch (dbError) {
+        console.error('Erreur sauvegarde ChatConversation:', dbError);
+        // On continue même si l'enregistrement échoue
+      }
+    }
 
     // Parse le JSON de la réponse
     let parsedContent;
