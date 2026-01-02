@@ -1,30 +1,60 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface Mood {
+  emoji: string;
+  label: string;
+  response: string;
+}
+
+const moods: Mood[] = [
+  { emoji: '😄', label: 'Motivé', response: 'Parfait. Utilise cette énergie pour avancer sur quelque chose d\'important.' },
+  { emoji: '🙂', label: 'Ça va', response: 'Bon état d\'esprit. Avancer tranquillement aujourd\'hui, c\'est déjà très bien.' },
+  { emoji: '😐', label: 'Fatigué', response: 'Même sans grande motivation, chaque petit pas compte et te rapproche de ton objectif.' },
+  { emoji: '😓', label: 'Démotivé', response: 'C\'est normal d\'avoir des jours comme ça. Commencer doucement suffit.' },
+  { emoji: '😤', label: 'Stressé', response: 'Le stress montre que ce sujet compte pour toi. On va y aller étape par étape.' },
+  { emoji: '🤔', label: 'Pensif', response: 'Réfléchir c\'est bien. Maintenant, passons à l\'action ensemble pour avancer concrètement.' },
+  { emoji: '😌', label: 'Serein', response: 'Excellente disposition. Tu es prêt à apprendre efficacement et à progresser aujourd\'hui.' },
+  { emoji: '😎', label: 'Confiant', response: 'Super attitude. Ta confiance va t\'aider à surmonter les défis qui t\'attendent.' },
+];
+
 export default function Classement() {
-  const topUsers = [
-    { rang: 1, nom: 'User_100', xp: 1900 },
-    { rang: 2, nom: 'User_101', xp: 1800 },
-    { rang: 3, nom: 'User_102', xp: 1700 }
-  ];
+  const router = useRouter();
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+
+  const handleMoodSelect = (mood: Mood) => {
+    setSelectedMood(mood);
+  };
+
+  const handleStart = () => {
+    router.push('/dashboard');
+  };
 
   return (
-    <div className="classement-section">
-      <div className="classement-header">
-        <span>🏆</span>
-        <h3>Classement</h3>
+    <div className="mood-selector-section">
+      <div className="mood-header">
+        <h3>Comment tu te sens aujourd&apos;hui ?</h3>
+        <p className="mood-subtitle">Choisis ce qui te correspond le mieux avant de commencer.</p>
       </div>
 
-      <div className="classement-liste">
-        {topUsers.map((user) => (
-          <div key={user.rang} className="classement-item">
-            <span className="classement-rang">#{user.rang}</span>
-            <span className="classement-nom">{user.nom}</span>
-            <span className="classement-xp">{user.xp} XP</span>
-          </div>
+      <div className="mood-grid">
+        {moods.map((mood) => (
+          <button
+            key={mood.emoji}
+            className={`mood-card ${selectedMood?.emoji === mood.emoji ? 'selected' : ''}`}
+            onClick={() => handleMoodSelect(mood)}
+          >
+            <span className="mood-emoji">{mood.emoji}</span>
+            <span className="mood-label">{mood.label}</span>
+          </button>
         ))}
       </div>
 
-      <button className="btn-voir-tout">Voir tout</button>
+      <div className="mood-response">
+        <p>{selectedMood ? selectedMood.response : "Commence ton bilan d'aujourd'hui"}</p>
+      </div>
     </div>
   );
 }
