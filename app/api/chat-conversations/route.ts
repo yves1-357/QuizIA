@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // GET - Récupérer toutes les conversations d'un utilisateur
 export async function GET(request: NextRequest) {
@@ -12,20 +10,25 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User ID manquant' }, { status: 401 });
     }
 
-    const conversations = await prisma.chatConversation.findMany({
-      where: { userId },
+
+    type ChatConversation = Awaited<ReturnType<typeof prisma.chatConversation.findMany>>[number];
+    const conversations: ChatConversation[] = await prisma.chatConversation.findMany({
+      where: { 
+        userId,
+        type: 'chat'  // Seulement les conversations du chatbot
+      },
       orderBy: { updatedAt: 'desc' }
     });
 
-    // Parser les messages JSON
+    // Parser les messages JSON (gérer les null)
     const conversationsWithParsedMessages = conversations.map(conv => ({
       ...conv,
-      messages: JSON.parse(conv.messages)
+      messages: conv.messages ? JSON.parse(conv.messages) : []
     }));
 
     return NextResponse.json(conversationsWithParsedMessages);
   } catch (error) {
-    console.error('❌ Erreur GET conversations:', error);
+    console.error('Erreur GET conversations:', error);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
@@ -46,13 +49,14 @@ export async function POST(request: NextRequest) {
         userId,
         title,
         model,
+        type: 'chat',
         messages: JSON.stringify(messages)
       }
     });
 
     return NextResponse.json({
       ...conversation,
-      messages: JSON.parse(conversation.messages)
+      messages: conversation.messages ? JSON.parse(conversation.messages) : []
     });
   } catch (error) {
     console.error('Erreur POST conversation:', error);
@@ -85,11 +89,35 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       ...conversation,
-      messages: JSON.parse(conversation.messages)
+      messages: conversation.messages ? JSON.parse(conversation.messages) : []
     });
-  } catch (error) {
-    console.error('Erreur PUT conversation:', error);
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+  } catch (error: unknown) {
+    // Log détaillé pour debug
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      typeof (error as { code?: string; message?: string }).code === 'string' &&
+      (
+        (error as { code?: string }).code === '26000' ||
+        (typeof (error as { message?: string }).message === 'string' &&
+          (error as { message?: string }).message!.includes('prepared statement'))
+      )
+    ) {
+      console.error('Erreur prepared statement (retry automatique en cours):', (error as { message?: string }).message);
+    } else {
+      console.error('Erreur PUT conversation:', error);
+    }
+    return NextResponse.json({
+      error: 'Erreur serveur',
+      details:
+        process.env.NODE_ENV === 'development' &&
+        typeof error === 'object' &&
+        error !== null &&
+        'message' in error
+          ? (error as { message?: string }).message
+          : undefined,
+    }, { status: 500 });
   }
 }
 
