@@ -13,13 +13,8 @@ import LegalModal from '@/components/LegalModal';
 
 export default function Dashboard() {
   const router = useRouter();
-  const [user, _setUser] = useState<{ name: string; email: string; id: string } | null>(() => {
-    if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem('user');
-      return userStr ? JSON.parse(userStr) : null;
-    }
-    return null;
-  });
+  const [user, _setUser] = useState<{ name: string; email: string; id: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
@@ -27,6 +22,14 @@ export default function Dashboard() {
   const [selectedSubject, setSelectedSubject] = useState({ name: '', id: '', level: 1 });
   const [subjectProgress, setSubjectProgress] = useState<Record<string, { level: number; progression: number }>>({});
   const [tempProgress, setTempProgress] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      _setUser(JSON.parse(userStr));
+    }
+    setIsLoading(false);
+  }, []);
 
   const loadTempProgress = useCallback(() => {
     if (typeof window === 'undefined' || !user) return;
@@ -74,6 +77,8 @@ export default function Dashboard() {
 
   useEffect(() => {
      // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (isLoading) return;
+    
     if (!user) {
       router.push('/');
     } else {
@@ -138,7 +143,7 @@ export default function Dashboard() {
     handleSubjectClick(subject, subjectIds[subject] || 'math-1', level);
   };
 
-  if (!user) {
+  if (isLoading || !user) {
     return null;
   }
 
