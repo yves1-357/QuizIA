@@ -221,7 +221,7 @@ export default function Progres() {
         let startDate = localStorage.getItem(dateKey);
 
         if (questions && currentIndex !== null) {
-          // Si pas de date enregistrée, créer une date par défaut (maintenant)
+          // Si pas de date enregistrée, on crée une date par défaut (maintenant)
           if (!startDate) {
             startDate = new Date().toISOString();
             localStorage.setItem(dateKey, startDate);
@@ -371,7 +371,7 @@ Génère MAINTENANT une phrase unique et motivante :`;
         // Nettoyer la recommandation (enlever guillemets, points de suspension, etc.)
         recommendation = recommendation.trim().replace(/^["']|["']$/g, '');
         
-        // Si pas de recommandation, générer un message varié
+        // Si pas de recommandation, on génère un message varié
         if (!recommendation) {
           const fallbackMessages = [
             `Continue comme ça en ${lastSubject.name} ! Travaille sur ${lastSubject.toImprove[0] || 'tes points faibles'} pour progresser encore plus vite.`,

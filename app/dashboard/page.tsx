@@ -113,7 +113,7 @@ export default function Dashboard() {
   }, [router, user, fetchUserProgress, loadTempProgress]);
 
   useEffect(() => {
-    // Appliquer le thème sauvegardé au chargement
+    // On applique le thème sauvegardé au chargement
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
@@ -126,7 +126,7 @@ export default function Dashboard() {
   };
 
   const handleContinueFromSerie = (subject: string, level: number) => {
-    // Déterminer l'ID du sujet
+    // On détermine l'ID du sujet (très important)
     const subjectIds: Record<string, string> = {
       'Mathématiques': 'math-1',
       'Physique': 'phys-1',
