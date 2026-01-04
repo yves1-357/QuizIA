@@ -113,7 +113,7 @@ export default function Progres() {
       const masteredTopics: string[] = [];
       const toImproveTopics: string[] = [];
 
-      // Analyser les 4 niveaux
+      // On analyse les 4 niveaux
       for (let level = 1; level <= 4; level++) {
         const questionsKey = `${user.id}_${subject.name}_${level}_questions`;
         const indexKey = `${user.id}_${subject.name}_${level}_currentIndex`;
@@ -376,7 +376,7 @@ Génère MAINTENANT une phrase unique et motivante :`;
           const fallbackMessages = [
             `Continue comme ça en ${lastSubject.name} ! Travaille sur ${lastSubject.toImprove[0] || 'tes points faibles'} pour progresser encore plus vite.`,
             `Excellent travail en ${lastSubject.name} ! Concentre-toi sur ${lastSubject.toImprove[0] || 'les notions difficiles'} et tu vas débloquer le niveau ${lastLevel + 1}.`,
-            `Tu es sur la bonne voie en ${lastSubject.name} ! Approfondis ${lastSubject.toImprove[0] || 'tes connaissances'} pour consolider ton niveau ${lastLevel}.`,
+            `Tu es franchement sur la bonne voie en ${lastSubject.name} ! Approfondis ${lastSubject.toImprove[0] || 'tes connaissances'} pour consolider ton niveau ${lastLevel}.`,
             `Bravo pour ta persévérance en ${lastSubject.name} ! Révise ${lastSubject.toImprove[0] || 'les concepts clés'} et tu atteindras ${lastSubject.overallPercentage + 10}%.`,
             `Super progression en ${lastSubject.name} ! Entraîne-toi sur ${lastSubject.toImprove[0] || 'les exercices'} pour maîtriser le niveau ${lastLevel} à 100%.`
           ];
