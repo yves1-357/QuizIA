@@ -235,7 +235,7 @@ export default function Progres() {
           const correctCount = Math.floor(questionsAnswered * (0.6 + Math.random() * 0.2));
           const score = `${correctCount} / ${questionsAnswered}`;
           
-          // Formater la date en français
+          // On formate la date en français
           const date = new Date(startDate);
           const formattedDate = date.toLocaleDateString('fr-FR', {
             day: '2-digit',
@@ -313,7 +313,7 @@ export default function Progres() {
         }
         
         // Construire un prompt détaillé avec le contexte du dernier quiz
-        const prompt = `Tu es un conseiller pédagogique intelligent pour QuizIA.
+        const prompt = `Tu es un conseiller pédagogique super intelligent pour QuizIA.
 
 CONTEXTE DU DERNIER QUIZ :
 - Matière : ${lastSubject.name}
@@ -334,7 +334,7 @@ EXEMPLES DE STYLES À VARIER :
 - "Continue comme ça ! Révise [notion] et tu passeras au niveau ${lastLevel + 1}."
 - "Bravo pour ta persévérance ! Approfondis [notion] pour atteindre ${lastSubject.overallPercentage + 10}%."
 
-Génère MAINTENANT une phrase unique et motivante :`;
+Génère MAINTENANT une phrase unique et vraiment motivante :`;
 
         const response = await fetch('/api/chat', {
           method: 'POST',
