@@ -74,7 +74,7 @@ export default function Parcours() {
       const detectedAcademic = choixAcademique ? academicMapping[choixAcademique] || 'Lycée' : 'Lycée';
       
       for (let level = 1; level <= 4; level++) {
-        // Charger les données depuis localStorage (format standard)
+        // On charge les données depuis localStorage (format standard)
         const questionsKey = `${user.id}_${subject.name}_${level}_questions`;
         const indexKey = `${user.id}_${subject.name}_${level}_currentIndex`;
         
@@ -117,7 +117,7 @@ export default function Parcours() {
   }, [user]);
 
   useEffect(() => {
-    // Appliquer le thème sauvegardé au chargement
+    // On applique ici le thème sauvegardé au chargement
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', savedTheme);
