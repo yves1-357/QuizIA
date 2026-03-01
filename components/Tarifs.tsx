@@ -36,7 +36,7 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
           <div className="pricing-card">
             <h3>Étudiant</h3>
             <div className="price">
-              <span className="amount">4.99€</span>
+              <span className="amount">5.99€</span>
               <span className="period">/mois</span>
             </div>
             <ul className="features-list">
@@ -54,7 +54,7 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
             <div className="badge">Populaire</div>
             <h3>Pro</h3>
             <div className="price">
-              <span className="amount">9.99€</span>
+              <span className="amount">10.99€</span>
               <span className="period">/mois</span>
             </div>
             <ul className="features-list">
@@ -65,6 +65,25 @@ export default function PricingModal({ isOpen, onClose }: PricingModalProps) {
               <li>✓ Statistiques détaillées</li>
             </ul>
             <button className="pricing-btn primary">Choisir Pro</button>
+          </div>
+
+          {/* Plan Etablissement */}
+          <div className="pricing-card">
+            <h3>Établissement</h3>
+            <div className="price">
+              <span className="amount">199€</span>
+              <span className="period">/mois</span>
+            </div>
+            <ul className="features-list">
+              <li>✓ Tout Premium</li>
+              <li>✓ Dashboard prof</li>
+              <li>✓ Devoirs assignées</li>
+              <li>✓ Mode Coach Brutal</li>
+              <li>✓ Statistiques détaillées</li>
+              <li>✓ Account manager</li>
+              
+            </ul>
+            <button className="pricing-btn">Choisir Étudiant</button>
           </div>
         </div>
       </div>
