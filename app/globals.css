@@ -312,8 +312,8 @@ footer {
   border: 2px solid var(--glass-border);
   border-radius: 24px;
   padding: 40px;
-  max-width: 1000px;
-  width: 90%;
+  max-width: 1400px;
+  width: 95%;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -379,8 +379,14 @@ footer {
 /* Tarifs - Grille de prix */
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pricing-card {
@@ -391,6 +397,9 @@ footer {
   text-align: center;
   position: relative;
   transition: transform 0.3s, border-color 0.3s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .pricing-card:hover {
@@ -444,6 +453,7 @@ footer {
   padding: 0;
   margin: 32px 0;
   text-align: left;
+  flex-grow: 1;
 }
 
 .features-list li {
@@ -466,6 +476,7 @@ footer {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  margin-top: auto;
 }
 
 [data-theme="light"] .pricing-btn {
