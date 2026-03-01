@@ -74,7 +74,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Vérifier l'authentification admin
+      // On vérifie bien l'authentification admin
       const adminAuth = localStorage.getItem('adminAuth');
       const adminEmail = localStorage.getItem('adminEmail');
       
@@ -99,7 +99,7 @@ export default function AdminPage() {
 
     const interval = setInterval(() => {
       loadRealData();
-    }, 10000); // Rafraîchir toutes les 10 secondes
+    }, 10000); // On rafraîchit toutes les 10 secondes
 
     return () => clearInterval(interval);
   }, [router]);

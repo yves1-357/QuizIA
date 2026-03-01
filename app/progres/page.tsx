@@ -113,7 +113,7 @@ export default function Progres() {
       const masteredTopics: string[] = [];
       const toImproveTopics: string[] = [];
 
-      // Analyser les 4 niveaux
+      // On analyse les 4 niveaux
       for (let level = 1; level <= 4; level++) {
         const questionsKey = `${user.id}_${subject.name}_${level}_questions`;
         const indexKey = `${user.id}_${subject.name}_${level}_currentIndex`;
@@ -221,7 +221,7 @@ export default function Progres() {
         let startDate = localStorage.getItem(dateKey);
 
         if (questions && currentIndex !== null) {
-          // Si pas de date enregistrée, créer une date par défaut (maintenant)
+          // Si pas de date enregistrée, on crée une date par défaut (maintenant)
           if (!startDate) {
             startDate = new Date().toISOString();
             localStorage.setItem(dateKey, startDate);
@@ -235,7 +235,7 @@ export default function Progres() {
           const correctCount = Math.floor(questionsAnswered * (0.6 + Math.random() * 0.2));
           const score = `${correctCount} / ${questionsAnswered}`;
           
-          // Formater la date en français
+          // On formate la date en français
           const date = new Date(startDate);
           const formattedDate = date.toLocaleDateString('fr-FR', {
             day: '2-digit',
@@ -313,7 +313,7 @@ export default function Progres() {
         }
         
         // Construire un prompt détaillé avec le contexte du dernier quiz
-        const prompt = `Tu es un conseiller pédagogique intelligent pour QuizIA.
+        const prompt = `Tu es un conseiller pédagogique super intelligent pour QuizIA.
 
 CONTEXTE DU DERNIER QUIZ :
 - Matière : ${lastSubject.name}
@@ -334,7 +334,7 @@ EXEMPLES DE STYLES À VARIER :
 - "Continue comme ça ! Révise [notion] et tu passeras au niveau ${lastLevel + 1}."
 - "Bravo pour ta persévérance ! Approfondis [notion] pour atteindre ${lastSubject.overallPercentage + 10}%."
 
-Génère MAINTENANT une phrase unique et motivante :`;
+Génère MAINTENANT une phrase unique et vraiment motivante :`;
 
         const response = await fetch('/api/chat', {
           method: 'POST',
@@ -371,12 +371,12 @@ Génère MAINTENANT une phrase unique et motivante :`;
         // Nettoyer la recommandation (enlever guillemets, points de suspension, etc.)
         recommendation = recommendation.trim().replace(/^["']|["']$/g, '');
         
-        // Si pas de recommandation, générer un message varié
+        // Si pas de recommandation, on génère un message varié
         if (!recommendation) {
           const fallbackMessages = [
             `Continue comme ça en ${lastSubject.name} ! Travaille sur ${lastSubject.toImprove[0] || 'tes points faibles'} pour progresser encore plus vite.`,
             `Excellent travail en ${lastSubject.name} ! Concentre-toi sur ${lastSubject.toImprove[0] || 'les notions difficiles'} et tu vas débloquer le niveau ${lastLevel + 1}.`,
-            `Tu es sur la bonne voie en ${lastSubject.name} ! Approfondis ${lastSubject.toImprove[0] || 'tes connaissances'} pour consolider ton niveau ${lastLevel}.`,
+            `Tu es franchement sur la bonne voie en ${lastSubject.name} ! Approfondis ${lastSubject.toImprove[0] || 'tes connaissances'} pour consolider ton niveau ${lastLevel}.`,
             `Bravo pour ta persévérance en ${lastSubject.name} ! Révise ${lastSubject.toImprove[0] || 'les concepts clés'} et tu atteindras ${lastSubject.overallPercentage + 10}%.`,
             `Super progression en ${lastSubject.name} ! Entraîne-toi sur ${lastSubject.toImprove[0] || 'les exercices'} pour maîtriser le niveau ${lastLevel} à 100%.`
           ];

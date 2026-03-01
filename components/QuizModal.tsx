@@ -398,7 +398,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           </>
         )}
 
-        {/* Academic Level Selection */}
+        {/* la section avec le niveau académique */}
         {step === 'academic-level' && (
           <>
             <div className="quiz-modal-header">
@@ -444,7 +444,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           </>
         )}
 
-        {/* Quiz Questions */}
+        {/* les différentes questions du quiz */}
         {step === 'quiz' && !isLoading && questions.length > 0 && (
           <>
             <div className="quiz-modal-header">
@@ -485,7 +485,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           </>
         )}
 
-        {/* Results */}
+        {/* Resultats */}
         {step === 'results' && feedback && (
           <>
             <div className="quiz-modal-header">
@@ -545,7 +545,7 @@ export default function QuizModal({ isOpen, onClose, subject, subjectId, userId,
           </>
         )}
 
-        {/* Loading */}
+        {/* Le chargement */}
         {isLoading && (
           <div className="quiz-loading">
             <div className="spinner"></div>
